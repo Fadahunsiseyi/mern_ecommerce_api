@@ -55,6 +55,15 @@ const updateAUser = async (req, res) => {
   }
 }
 
+const getAllUser = asyncHandler(async (req,res) => {
+  try {
+    const allUsers = await User.find()
+    res.json({users: allUsers})
+  } catch (error) {
+    throw new Error(error)
+  }
+})
+
 
 
 

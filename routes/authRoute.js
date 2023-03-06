@@ -8,6 +8,7 @@ router.post('/register',createUser)
 router.post('/login',loginUser)
 router.get('/allUser',getAllUser)
 router.get('/:id',getAUser)
+router.delete('/:id',deleteAUser)
 router.put('/:id',updateAUser)
 
 

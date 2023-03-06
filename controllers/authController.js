@@ -37,4 +37,25 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { createUser, loginUser };
+const updateAUser = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const {firstName, lastName, email, mobile} = req.body;
+    const updateUser = await User.findByIdAndUpdate(id,{
+      firstName,
+      lastName,
+      email,
+      mobile
+    },{
+      new: true,
+    })
+    res.json({updateUser})
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+
+
+
+module.exports = { createUser, loginUser, getAllUser,getAUser,deleteAUser, updateAUser };

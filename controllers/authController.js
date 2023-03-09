@@ -95,7 +95,22 @@ const updateAUser = asyncHandler(async (req, res) => {
 });
 
 
-
+const logout = asyncHandler(async (req, res) => {
+  const cookie = req.refreshToken
+  const user = await User.findOne(cookie)
+  if(!user){
+    throw new Error('User not found')
+  }else{
+    await User.findOneAndUpdate(cookie,{
+      "refreshToken": ''
+    })
+    res.clearCookie("refreshToken",{
+      httpOnly: true,
+      secure:true
+    })
+    res.status(200).json({success: true})
+  }
+})
 
 const getAllUser = asyncHandler(async (req, res) => {
   try {

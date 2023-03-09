@@ -1,11 +1,11 @@
 const jwt = require("jsonwebtoken");
 
-const generateToken =  (id) => {
+const generateRefreshToken =  (id) => {
     if(!id){
-        throw new Error("Invalid token")
+        throw new Error("Invalid refresh token")
     }else {
        return jwt.sign({ id }, process.env.JWT, { expiresIn: "3d" });
     }
 };
 
-module.exports = generateToken
+module.exports = generateRefreshToken

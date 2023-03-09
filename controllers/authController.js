@@ -22,7 +22,21 @@ const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const findUser = await User.findOne({ email });
   if (findUser && (await findUser.isPasswordMatched(password))) {
-
+    const { id } = findUser;
+    const refreshToken = await generateRefreshToken(id);
+    await User.findByIdAndUpdate(
+      id,
+      {
+        refreshToken,
+      },
+      {
+        new: true,
+      }
+    );
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 72 * 60 * 60 * 1000,
+    });
     const { firstName, lastName, email, _id, mobile } = findUser;
     res.status(200).json({
       message: "User logged in successfully",

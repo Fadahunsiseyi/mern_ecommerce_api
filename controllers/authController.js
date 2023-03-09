@@ -83,7 +83,14 @@ const updateAUser = asyncHandler(async (req, res) => {
 
 
 
-
+const getAllUser = asyncHandler(async (req, res) => {
+  try {
+    const allUsers = await User.find();
+    res.json({ users: allUsers });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 
 const getAUser = asyncHandler(async (req, res) => {
   const { id } = req.user;

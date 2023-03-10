@@ -28,6 +28,8 @@
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.0",
-    "nodemon": "^2.0.21"
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.21",
+    "slugify": "^1.6.5"
   }
 }

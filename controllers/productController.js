@@ -46,6 +46,14 @@ const updateAProduct = asyncHandler(async (req, res) => {
   }
 });
 
-
+const deleteProduct = asyncHandler(async (req, res) => {
+    const {id} = req.params
+    try {
+        await Product.findByIdAndDelete(id)
+        res.json({message: "Product deleted successfully"})
+    } catch (error) {
+        throw new Error(error);
+    }
+})
 
 module.exports = { createProduct, getAProduct, getAllProducts, updateAProduct,deleteProduct };

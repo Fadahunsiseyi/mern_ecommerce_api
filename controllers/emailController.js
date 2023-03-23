@@ -27,4 +27,4 @@ const sendEmail = asyncHandler(async (data) => {
   console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
 });
 
-module.exports = sendEmail;
+module.exports = sendEmail; 

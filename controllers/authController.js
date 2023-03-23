@@ -220,7 +220,22 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
   }
 })
 
-
+const resetPassword = asyncHandler(async (req,res) => {
+  const {password} = req.body
+  console.log(req.params, req.query)
+  const {token} = req.params
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: {$gt: Date.now()}
+  })  
+  if(!user) throw new Error('Token expired, try again')
+  user.password = password
+  user.passwordResetExpires = undefined
+  user.passwordResetToken = undefined
+  await user.save()
+  res.status(200).json({user})
+})
 
 module.exports = {
   createUser,

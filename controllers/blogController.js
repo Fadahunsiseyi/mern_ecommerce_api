@@ -46,6 +46,15 @@ const getBlog = asyncHandler(async (req, res) => {
   }
 });
 
+const getAllBlog = asyncHandler(async (req, res) => {
+  try {
+    const getAll = await Blog.find();
+    res.status(200).json(getAll);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 
 
 module.exports = {

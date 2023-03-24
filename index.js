@@ -9,6 +9,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { notFound, errorHandler } = require("./middleswares/errorHandler");
 const morgan = require('morgan');
+const blogRouter = require('./routes/blogRoute')
 
 connectDb();
 
@@ -18,6 +19,7 @@ app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended:false}))
 app.use("/api/user", authRouter);
 app.use('/api/product',productRouter)
+app.use('/api/blog',blogRouter)
 
 app.use(notFound)
 app.use(errorHandler)

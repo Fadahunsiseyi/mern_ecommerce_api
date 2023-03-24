@@ -66,6 +66,55 @@ const deleteBlog = asyncHandler(async (req, res) => {
   }
 });
 
+const likeBlog = asyncHandler(async (req, res) => {
+  const { blogId } = req.body;
+  validateId(blogId);
+  const blog = await Blog.findById(blogId);
+  const loginUserId = req.user?.id;
+  if (loginUserId) {
+    const isLiked = blog?.isLiked;
+    const isDisLiked = blog?.disLikes?.find(
+      (userId) => userId?.toString() === loginUserId?.toString()
+    );
+    if (isDisLiked) {
+      const blog = await Blog.findByIdAndUpdate(
+        blogId,
+        {
+          $pull: { disLikes: loginUserId },
+          isDisLiked: false,
+        },
+        { new: true }
+      );
+      res.json(blog);
+    }
+    if (isLiked) {
+      const blog = await Blog.findByIdAndUpdate(
+        blogId,
+        {
+          $pull: { likes: loginUserId },
+          isLiked: false,
+        },
+        { new: true }
+      );
+      res.json(blog);
+    } else {
+      const blog = await Blog.findByIdAndUpdate(
+        blogId,
+        {
+          $push: { likes: loginUserId },
+          isLiked: true,
+        },
+        { new: true }
+      );
+      res.json(blog);
+    }
+  } else {
+    throw new Error("User not found");
+  }
+});
+
+
+
 
 module.exports = {
   createBlog,

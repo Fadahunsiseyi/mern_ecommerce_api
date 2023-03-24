@@ -55,6 +55,16 @@ const getAllBlog = asyncHandler(async (req, res) => {
   }
 });
 
+const deleteBlog = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateId(id);
+  try {
+    const updateBlog = await Blog.findByIdAndDelete(id);
+    res.status(200).json({ message: "Blog deleted successfully", updateBlog });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 
 
 module.exports = {

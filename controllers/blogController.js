@@ -114,7 +114,53 @@ const likeBlog = asyncHandler(async (req, res) => {
 });
 
 
-
+const disLikeBlog = asyncHandler(async (req, res) => {
+  const { blogId } = req.body;
+  validateId(blogId);
+  const blog = await Blog.findById(blogId);
+  const loginUserId = req.user?.id;
+  if (loginUserId) {
+    const isDisLiked = blog?.isDisLiked;
+    const isLiked = blog?.likes?.find(
+      (userId) => userId?.toString() === loginUserId?.toString()
+    );
+    console.log(isLiked, isDisLiked);
+    if (isLiked) {
+      const blog = await Blog.findByIdAndUpdate(
+        blogId,
+        {
+          $pull: { likes: loginUserId },
+          isLiked: false,
+        },
+        { new: true }
+      );
+      res.json(blog);
+    }
+    if (isDisLiked) {
+      const blog = await Blog.findByIdAndUpdate(
+        blogId,
+        {
+          $pull: { disLikes: loginUserId },
+          isDisLiked: false,
+        },
+        { new: true }
+      );
+      res.json(blog);
+    } else {
+      const blog = await Blog.findByIdAndUpdate(
+        blogId,
+        {
+          $push: { disLikes: loginUserId },
+          isDisLiked: true,
+        },
+        { new: true }
+      );
+      res.json(blog); 
+    }
+  } else {
+    throw new Error("User not found");
+  }
+});
 
 module.exports = {
   createBlog,

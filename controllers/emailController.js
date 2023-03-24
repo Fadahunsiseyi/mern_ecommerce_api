@@ -11,7 +11,6 @@ const sendEmail = asyncHandler(async (data) => {
       pass: 'enter your generated password',
     },
   });
-  console.log(transporter,'THE TRANSPORTER IS SUCCESSFUL')
 
   let info = await transporter.sendMail({
     from: '"Fred Foo 👻" <foo@example.com>',
@@ -20,11 +19,6 @@ const sendEmail = asyncHandler(async (data) => {
     text: data.text,
     html: data.html,
   });
-  console.log(info)
-
-  console.log("Message sent: %s", info.messageId);
-
-  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
 });
 
 module.exports = sendEmail; 

@@ -12,6 +12,7 @@ const morgan = require('morgan');
 const blogRouter = require('./routes/blogRoute')
 const productCategoryRouter = require('./routes/productCategoryRoute')
 const blogCategoryRouter = require('./routes/blogCategoryRoute')
+const brandRouter = require('./routes/brandRoute')
 
 connectDb();
 
@@ -24,6 +25,7 @@ app.use('/api/product',productRouter)
 app.use('/api/blog',blogRouter)
 app.use('/api/category',productCategoryRouter)
 app.use('/api/blogcategory',blogCategoryRouter)
+app.use('/api/brand', brandRouter)
 
 app.use(notFound)
 app.use(errorHandler)

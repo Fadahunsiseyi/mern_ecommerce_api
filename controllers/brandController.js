@@ -35,6 +35,17 @@ const deleteBrand = asyncHandler(async (req, res) => {
     }
 });
 
+const getBrand = asyncHandler(async (req, res) => {
+    const {id} = req.params;
+    validateId(id);
+    try {
+        const category = await Brand.findById(id);
+        res.status(200).json(category);
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
 
 
 

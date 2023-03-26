@@ -12,6 +12,19 @@ const createBrand = asyncHandler(async (req, res) => {
 });
 
 
+const updateBrand = asyncHandler(async (req, res) => {
+    const {id} = req.params;
+    validateId(id);
+    try {
+        const updatedCategory = await Brand.findByIdAndUpdate(id, req.body, {new:true});
+        res.status(200).json(updatedCategory);
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
+
+
 
 
 

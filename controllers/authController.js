@@ -311,6 +311,40 @@ const getWishlist = asyncHandler(async (req, res) => {
   }
 });
 
+const userCart = asyncHandler(async (req, res) => {
+  const { cart } = req.body;
+  const { id } = req.user;
+  validateId(id);
+  try {
+    const products = [];
+    const user = await User.findById(id);
+    const alreadyExistCart = await Cart.findOne({ orderBy: user._id });
+    if (alreadyExistCart) alreadyExistCart.remove();
+    for (let i = 0; i < cart.length; i++) {
+      const obj = {};
+      obj.product = cart[i].id;
+      obj.count = cart[i].count;
+      obj.color = cart[i].color;
+      let getPrice = await Product.findById(cart[i].id).select("price").exec();
+      obj.price = getPrice.price;
+      products.push(obj);
+    }
+    let cartTotal = 0;
+    for (let i = 0; i < products.length; i++) {
+      cartTotal = cartTotal + products[i].price * products[i].count;
+    }
+    let newCart = await new Cart({
+      products,
+      cartTotal,
+      orderBy: user?.id,
+    }).save();
+    res.json(newCart);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+
 
 
 

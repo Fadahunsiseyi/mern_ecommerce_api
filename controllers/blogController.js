@@ -126,7 +126,6 @@ const disLikeBlog = asyncHandler(async (req, res) => {
     const isLiked = blog?.likes?.find(
       (userId) => userId?.toString() === loginUserId?.toString()
     );
-    console.log(isLiked, isDisLiked);
     if (isLiked) {
       const blog = await Blog.findByIdAndUpdate(
         blogId,

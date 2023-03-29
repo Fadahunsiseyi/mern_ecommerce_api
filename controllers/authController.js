@@ -226,6 +226,7 @@ const blockUser = async (req, res) => {
     throw new Error(error);
   }
 };
+
 const unblockUser = async (req, res) => {
   const { id } = req.user;
   validateId(id);

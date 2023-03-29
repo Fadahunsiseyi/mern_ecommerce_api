@@ -6,6 +6,11 @@ const validateId = require("../utils/validateMongodbId.js");
 const generateRefreshToken = require("../config/refreshToken.js");
 const sendEmail = require("./emailController.js");
 const crypto = require("crypto");
+const Cart = require("../models/cartModel.js");
+const Product = require("../models/productModel.js");
+const Coupon = require("../models/couponModel.js");
+const Order = require("../models/orderModel.js");
+const { v4: uuidv4 } = require('uuid');
 
 const createUser = asyncHandler(async (req, res) => {
   const { email } = req.body;
@@ -57,13 +62,12 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
-
 //Admin Login
 
 const loginAdmin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const findAdmin = await User.findOne({ email });
-  if(findAdmin.role !== 'admin') throw new Error("Not authorized");
+  if (findAdmin.role !== "admin") throw new Error("Not authorized");
   if (findAdmin && (await findAdmin.isPasswordMatched(password))) {
     const { id } = findAdmin;
     const refreshToken = await generateRefreshToken(id);
@@ -97,8 +101,6 @@ const loginAdmin = asyncHandler(async (req, res) => {
     throw new Error("Invalid Credentials");
   }
 });
-
-
 
 const handleRefreshToken = asyncHandler(async (req, res) => {
   const { refreshToken } = req.cookies;
@@ -138,15 +140,15 @@ const updateAUser = asyncHandler(async (req, res) => {
   }
 });
 
-const saveAddress = asyncHandler( async (req, res) => {
-  const {id} = req.user;
+const saveAddress = asyncHandler(async (req, res) => {
+  const { id } = req.user;
   validateId(id);
   try {
     const { id } = req.user;
     const updateUser = await User.findByIdAndUpdate(
       id,
       {
-        address: req?.body?.address
+        address: req?.body?.address,
       },
       {
         new: true,
@@ -156,9 +158,7 @@ const saveAddress = asyncHandler( async (req, res) => {
   } catch (error) {
     throw new Error(error);
   }
-})
-
-
+});
 
 const getAllUser = asyncHandler(async (req, res) => {
   try {
@@ -178,7 +178,6 @@ const getAUser = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-
 
 const logout = asyncHandler(async (req, res) => {
   const cookie = req.refreshToken;
@@ -251,8 +250,8 @@ const updatePassword = async (req, res) => {
   validateId(id);
   const { password } = req.body;
   try {
-    const user = await User.findById(id)
-    user.resetPasswordToken()
+    const user = await User.findById(id);
+    user.resetPasswordToken();
     if (password) {
       user.password = password;
       const updatedPaassword = await user.save();
@@ -261,59 +260,59 @@ const updatePassword = async (req, res) => {
       res.json({ user });
     }
   } catch (error) {
-    throw new Error("Invalid Id",error);
+    throw new Error("Invalid Id", error);
   }
 };
 
 const forgotPasswordToken = asyncHandler(async (req, res) => {
-  const {email} = req.body
-  const user = await User.findOne({email})
-  if(!user) throw new Error('User not found')
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) throw new Error("User not found");
   try {
-    const token = await user.resetPasswordToken()//da78
-    await user.save()
-    const resetUrl = `Please follow this link to reset your password  <a href="http://localhost:4000/api/user/reset-password/${token}" >Click here</a> `
+    const token = await user.resetPasswordToken(); //da78
+    await user.save();
+    const resetUrl = `Please follow this link to reset your password  <a href="http://localhost:4000/api/user/reset-password/${token}" >Click here</a> `;
     const data = {
       to: email,
-      text: 'Hello user',
-      subject: 'Forgot password link',
-      html: resetUrl
-    }
-    console.log(data);
-    sendEmail(data)
-    res.json({token})
+      text: "Hello user",
+      subject: "Forgot password link",
+      html: resetUrl,
+    };
+    sendEmail(data);
+    res.json({ token });
   } catch (error) {
-    throw new Error(error)
+    throw new Error(error);
   }
-})
+});
 
-const resetPassword = asyncHandler(async (req,res) => {
-  const {password} = req.body
-  console.log(req.params, req.query)
-  const {token} = req.params
-  const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
+const resetPassword = asyncHandler(async (req, res) => {
+  const { password } = req.body;
+  const { token } = req.params;
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
   const user = await User.findOne({
     passwordResetToken: hashedToken,
-    passwordResetExpires: {$gt: Date.now()}
-  })  
-  if(!user) throw new Error('Token expired, try again')
-  user.password = password
-  user.passwordResetExpires = undefined
-  user.passwordResetToken = undefined
-  await user.save()
-  res.status(200).json({user})
-})
+    passwordResetExpires: { $gt: Date.now() },
+  });
+  if (!user) throw new Error("Token expired, try again");
+  user.password = password;
+  user.passwordResetExpires = undefined;
+  user.passwordResetToken = undefined;
+  await user.save();
+  res.status(200).json({ user });
+});
 
-
-const getWishlist = asyncHandler(async (req,res) =>{
-  const {id} = req.user
+const getWishlist = asyncHandler(async (req, res) => {
+  const { id } = req.user;
   try {
-    const findUser = await User.findById(id).populate('wishlist')
-    res.json(findUser)
+    const findUser = await User.findById(id).populate("wishlist");
+    res.json(findUser);
   } catch (error) {
-    throw new Error(error)
+    throw new Error(error);
   }
-})
+});
+
+
+
 
 module.exports = {
   createUser,
@@ -331,5 +330,12 @@ module.exports = {
   resetPassword,
   loginAdmin,
   getWishlist,
-  saveAddress
+  saveAddress,
+  userCart,
+  getUserCart,
+  emptyCart,
+  applyCoupon,
+  createOrder,
+  getOrders,
+  updateOrderStatus
 };

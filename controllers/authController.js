@@ -57,6 +57,49 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
+
+//Admin Login
+
+const loginAdmin = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  const findAdmin = await User.findOne({ email });
+  if(findAdmin.role !== 'admin') throw new Error("Not authorized");
+  if (findAdmin && (await findAdmin.isPasswordMatched(password))) {
+    const { id } = findAdmin;
+    const refreshToken = await generateRefreshToken(id);
+    await User.findByIdAndUpdate(
+      id,
+      {
+        refreshToken,
+      },
+      {
+        new: true,
+      }
+    );
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 72 * 60 * 60 * 1000,
+    });
+    const { firstName, lastName, email, _id, mobile } = findAdmin;
+    res.status(200).json({
+      message: "User logged in successfully",
+      success: true,
+      user: {
+        _id,
+        firstName,
+        lastName,
+        email,
+        mobile,
+        token: generateToken(_id),
+      },
+    });
+  } else {
+    throw new Error("Invalid Credentials");
+  }
+});
+
+
+
 const handleRefreshToken = asyncHandler(async (req, res) => {
   const { refreshToken } = req.cookies;
   if (!refreshToken) throw new Error("No refresh token found in cookies");
@@ -95,22 +138,27 @@ const updateAUser = asyncHandler(async (req, res) => {
   }
 });
 
-const logout = asyncHandler(async (req, res) => {
-  const cookie = req.refreshToken;
-  const user = await User.findOne(cookie);
-  if (!user) {
-    throw new Error("User not found");
-  } else {
-    await User.findOneAndUpdate(cookie, {
-      refreshToken: "",
-    });
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: true,
-    });
-    res.status(200).json({ success: true });
+const saveAddress = asyncHandler( async (req, res) => {
+  const {id} = req.user;
+  validateId(id);
+  try {
+    const { id } = req.user;
+    const updateUser = await User.findByIdAndUpdate(
+      id,
+      {
+        address: req?.body?.address
+      },
+      {
+        new: true,
+      }
+    );
+    res.json({ updateUser });
+  } catch (error) {
+    throw new Error(error);
   }
-});
+})
+
+
 
 const getAllUser = asyncHandler(async (req, res) => {
   try {
@@ -128,6 +176,24 @@ const getAUser = asyncHandler(async (req, res) => {
     res.json({ usersss: getUser });
   } catch (error) {
     throw new Error(error);
+  }
+});
+
+
+const logout = asyncHandler(async (req, res) => {
+  const cookie = req.refreshToken;
+  const user = await User.findOne(cookie);
+  if (!user) {
+    throw new Error("User not found");
+  } else {
+    await User.findOneAndUpdate(cookie, {
+      refreshToken: "",
+    });
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+    });
+    res.status(200).json({ success: true });
   }
 });
 
@@ -160,6 +226,7 @@ const blockUser = async (req, res) => {
     throw new Error(error);
   }
 };
+
 const unblockUser = async (req, res) => {
   const { id } = req.user;
   validateId(id);
@@ -237,6 +304,17 @@ const resetPassword = asyncHandler(async (req,res) => {
   res.status(200).json({user})
 })
 
+
+const getWishlist = asyncHandler(async (req,res) =>{
+  const {id} = req.user
+  try {
+    const findUser = await User.findById(id).populate('wishlist')
+    res.json(findUser)
+  } catch (error) {
+    throw new Error(error)
+  }
+})
+
 module.exports = {
   createUser,
   loginUser,
@@ -250,5 +328,8 @@ module.exports = {
   logout,
   updatePassword,
   forgotPasswordToken,
-  resetPassword
+  resetPassword,
+  loginAdmin,
+  getWishlist,
+  saveAddress
 };

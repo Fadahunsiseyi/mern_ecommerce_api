@@ -35,6 +35,7 @@
     "nodemailer": "^6.9.1",
     "nodemon": "^2.0.21",
     "sharp": "^0.32.0",
-    "slugify": "^1.6.5"
+    "slugify": "^1.6.5",
+    "uuid": "^9.0.0"
   }
 }

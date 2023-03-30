@@ -46,7 +46,7 @@
 
 - GitHub: [Fadahunsiseyi](https://github.com/Fadahunsiseyi)
 - Twitter: [Fadahunsiseyi_](https://twitter.com/@Fadahunsiseyi_)
-- LinkedIn: [fadahunsi-seyi-samuel](https://www.linkedin.com/in/fadahunsi-seyi-samuel-49191a209/)
+- LinkedIn: [fadahunsi-seyi-samuel](https://www.linkedin.com/in/fadahunsiseyi)
 
 
 ## 🤝 Contributing
